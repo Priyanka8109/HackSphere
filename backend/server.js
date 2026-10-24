@@ -24,7 +24,14 @@ app.set('trust proxy', 1); // Trust first proxy (Nginx) to correctly obtain clie
 app.use(helmet());
 
 // 2. CORS: Cross-Origin Resource Sharing
-app.use(cors({ origin: process.env.FRONTEND_URL || '*', methods: ['GET', 'POST'] }));
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || '*',
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    optionsSuccessStatus: 204,
+  })
+);
 
 // 3. Body parser: Parse incoming JSON payloads
 app.use(express.json());

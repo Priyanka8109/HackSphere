@@ -1,0 +1,10 @@
+node_modules
+npm-debug.log
+.env
+.git
+.gitignore
+*.bat
+verify*.js
+scratch
+dist
+coverage

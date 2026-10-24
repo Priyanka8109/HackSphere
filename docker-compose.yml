@@ -1,0 +1,59 @@
+# ==================================================
+# HackSphere Full-Stack Docker Compose (Experiment 7)
+# Orchestrates React Frontend and Node.js Backend
+# ==================================================
+
+services:
+  # --------------------------------------------------
+  # Backend API Service (Node.js + Express.js)
+  # --------------------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: hacksphere-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - NODE_ENV=production
+      # In Docker, connect to host machine MongoDB or cloud Atlas
+      - MONGO_URI=${DOCKER_MONGO_URI:-mongodb://host.docker.internal:27017/HackSphereDB}
+      - JWT_SECRET=${JWT_SECRET:-hacksphere_jwt_secure_secret_key_2026}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - hacksphere-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:5000/', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }).on('error', () => process.exit(1));"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  # --------------------------------------------------
+  # Frontend Client Service (React + Vite + Nginx)
+  # --------------------------------------------------
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_SOCKET_URL: http://localhost:5000
+    container_name: hacksphere-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - hacksphere-network
+
+# --------------------------------------------------
+# Isolated Bridge Network for container communication
+# --------------------------------------------------
+networks:
+  hacksphere-network:
+    driver: bridge

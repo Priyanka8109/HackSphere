@@ -3,7 +3,7 @@ import { io } from 'socket.io-client';
 import { useAuth } from '../context/AuthContext';
 
 // Backend Socket.IO URL – matches Docker Compose mapping (frontend at localhost:3000 proxies /api/ but socket connects directly)
-const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || 'http://localhost:5000';
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 export default function Chat() {
   const { user } = useAuth();

@@ -143,8 +143,9 @@ async function startServer() {
   const io = new Server(httpServer, {
     cors: {
       origin: process.env.FRONTEND_URL || '*',
-      methods: ["GET", "POST"]
-    }
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+    },
   });
 
   // Socket.IO connection handling
